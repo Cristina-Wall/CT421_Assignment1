@@ -1,6 +1,5 @@
 import random
 
-
 def random_string(length):
     initial_string = ""
 
@@ -10,31 +9,8 @@ def random_string(length):
     return initial_string
 
 
-def random_array(length):
-    initial_array = []
-
-    for i in range(0, length):
-        a = random.randint(0, 1)
-        initial_array.append(a)
-    return initial_array
-
-
-def count_fitness_array(input_array):
-    curr_fitness = 0
-
-    for x in range(len(input_array)):
-        if input_array[x] == 1:
-            curr_fitness += 1
-    return curr_fitness
-
-
 def count_fitness_string(input_string):
-    curr_fitness = 0
-
-    for x in input_string:
-        if x == "1":
-            curr_fitness += 1
-    return curr_fitness
+    return input_string.count("1")
 
 
 def single_point_crossover(parent_string1, parent_string2, point):
@@ -71,19 +47,30 @@ def best_crossover_point(string1, string2):
     return best_cross_point
 
 
+def mutate_string(string):
+    element = random.randint(1, len(string)-1)
+    string = string[:element-1] + str(abs(int(string[element])-1)) + string[element:]
+    return string
+
+
 new1 = random_string(30)
 new2 = random_string(30)
+fitness_array = []
+
 print("Parent1 :", new1)
-print("Parent2 :", new2, "\n")
+print("Parent2 :", new2)
 fitness1 = count_fitness_string(new1)
 fitness2 = count_fitness_string(new2)
 print("Fitness P1 :", fitness1)
 print("Fitness P2 :", fitness2, "\n")
+if fitness1 >= fitness2:
+    fitness_array.append(fitness1)
+elif fitness2 > fitness1:
+    fitness_array.append(fitness2)
 
-for i in range(5):
-    print("Generation ", i+1, " Children:")
+for i in range(50):
+    print("Generation ", i+1)
     best_point = best_crossover_point(new1, new2)
-    print("Best point : ", best_point)
     new1, new2 = single_point_crossover(new1, new2, best_point)
     fitness1 = count_fitness_string(new1)
     fitness2 = count_fitness_string(new2)
@@ -92,9 +79,13 @@ for i in range(5):
         new1 = new2
         new2 = temp
     print("Child1 :", new1)
-    print("Child2 :", new2, "\n")
+    print("Child2 :", new2)
     fitness1 = count_fitness_string(new1)
     fitness2 = count_fitness_string(new2)
+    fitness_array.append(fitness1)
     print("Fitness C1 :", fitness1)
     print("Fitness C2 :", fitness2, "\n")
 
+    new2 = mutate_string(new2)
+
+print(fitness_array)
