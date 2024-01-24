@@ -57,19 +57,19 @@ new1 = random_string(30)
 new2 = random_string(30)
 fitness_array = []
 
-print("Parent1 :", new1)
-print("Parent2 :", new2)
+# print("Parent1 :", new1)
+# print("Parent2 :", new2)
 fitness1 = count_fitness_string(new1)
 fitness2 = count_fitness_string(new2)
-print("Fitness P1 :", fitness1)
-print("Fitness P2 :", fitness2, "\n")
+# print("Fitness P1 :", fitness1)
+# print("Fitness P2 :", fitness2, "\n")
 if fitness1 >= fitness2:
     fitness_array.append(fitness1)
 elif fitness2 > fitness1:
     fitness_array.append(fitness2)
 
-for i in range(50):
-    print("Generation ", i+1)
+for i in range(100):
+    # print("Generation ", i+1)
     best_point = best_crossover_point(new1, new2)
     new1, new2 = single_point_crossover(new1, new2, best_point)
     fitness1 = count_fitness_string(new1)
@@ -78,14 +78,13 @@ for i in range(50):
         temp = new1
         new1 = new2
         new2 = temp
-    print("Child1 :", new1)
-    print("Child2 :", new2)
+    # print("Child1 :", new1)
+    # print("Child2 :", new2)
     fitness1 = count_fitness_string(new1)
     fitness2 = count_fitness_string(new2)
     fitness_array.append(fitness1)
-    print("Fitness C1 :", fitness1)
-    print("Fitness C2 :", fitness2, "\n")
-
+    # print("Fitness C1 :", fitness1)
+    # print("Fitness C2 :", fitness2, "\n")
     new2 = mutate_string(new2)
 
 print(fitness_array)
