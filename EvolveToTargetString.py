@@ -4,7 +4,7 @@ import random
 def random_string(length):
     initial_string = ""
 
-    for i in range(0, length):
+    for h in range(0, length):
         a = random.randint(0, 1)
         initial_string = initial_string + str(a)
     return initial_string
@@ -31,7 +31,7 @@ def single_point_crossover(parent_string1, parent_string2, point):
     return new_string1, new_string2
 
 
-def best_crossover_point(string1, string2):
+def best_crossover_point(string1, string2, target_string):
     best_fitness = 0
     temp1 = ""
     temp2 = ""
@@ -59,40 +59,70 @@ def mutate_string(string):
     return string
 
 
-new1 = random_string(30)
-new2 = random_string(30)
+def choose_parents(population_in):
+    parents = [random.choice(population_in), random.choice(population_in), random.choice(population_in),
+               random.choice(population_in)]
+    parents_fitness = []
+    second_best = ""
+    second_best_fitness = None
+
+    for k in range(len(parents)):
+        parents_fitness.append(count_fitness_string(parents[k], target))
+    best_parent_fitness = max(parents_fitness)
+
+    pairs = zip(parents, parents_fitness)
+    max_pair = max(pairs, key=lambda pair: pair[1])
+    max_item, max_score = max_pair
+
+    index_to_remove = parents.index(max_item)
+    del parents[index_to_remove]
+    del parents_fitness[index_to_remove]
+    pairs = zip(parents, parents_fitness)
+
+    second_max_pair = max(pairs, key=lambda pair: pair[1])
+    second_max_item, second_max_score = second_max_pair
+
+    second_best_fitness = parents_fitness[0]
+    for x in range(len(parents)):
+        if second_best_fitness < parents_fitness[x] and second_best != max_item:
+            second_best_fitness = parents_fitness[x]
+
+    return max_item, second_max_item
+
+
+# make population of strings and calculate fitness
+population = []
 fitness_array = []
-target_string = "001011011111001100111000101100"
+children_population = []
+target = random_string(30)
 
-# print("Parent1 :", new1)
-# print("Parent2 :", new2)
-fitness1 = count_fitness_string(new1, target_string)
-fitness2 = count_fitness_string(new2, target_string)
-# print("Fitness P1 :", fitness1)
-# print("Fitness P2 :", fitness2, "\n")
-if fitness1 >= fitness2:
-    fitness_array.append(fitness1)
-elif fitness2 > fitness1:
-    fitness_array.append(fitness2)
+for i in range(50):
+    temp_string = random_string(30)
+    population.append(temp_string)
+    fitness_array.append(count_fitness_string(temp_string, target))
+    children_population.append('')
 
-for i in range(100):
-    # print("Generation ", i+1)
-    best_point = best_crossover_point(new1, new2)
-    new1, new2 = single_point_crossover(new1, new2, best_point)
-    fitness1 = count_fitness_string(new1, target_string)
-    fitness2 = count_fitness_string(new2, target_string)
-    if fitness2 > fitness1:
-        temp = new1
-        new1 = new2
-        new2 = temp
-    # print("Child1 :", new1)
-    # print("Child2 :", new2)
-    fitness1 = count_fitness_string(new1, target_string)
-    fitness2 = count_fitness_string(new2, target_string)
-    fitness_array.append(fitness1)
-    # print("Fitness C1 :", fitness1)
-    # print("Fitness C2 :", fitness2, "\n")
+avg_fitness = sum(fitness_array) / len(fitness_array)
+print(avg_fitness)
 
-    new2 = mutate_string(new2)
+for i in range(50):
+    fitness_array.clear()
 
-print(fitness_array)
+    for j in range(0, len(population), 2):
+        parent1, parent2 = choose_parents(population)  # chooses 4 random strings and gets best 2 of 4
+        best_point = best_crossover_point(parent1, parent2, target)
+        # finds the crossover point where the fitness is highest
+        child1, child2 = single_point_crossover(parent1, parent2, best_point)
+        child1 = mutate_string(child1)  # random mutation of one bit
+        child2 = mutate_string(child2)
+
+        fitness_array.append(count_fitness_string(child1, target))
+        fitness_array.append(count_fitness_string(child2, target))
+
+        children_population[j] = child1
+        children_population[j+1] = child2
+
+    avg_fitness = sum(fitness_array) / len(fitness_array)
+
+    population = children_population
+    print("Gen ", i, " fitness: ", avg_fitness)
