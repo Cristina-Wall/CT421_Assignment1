@@ -97,7 +97,7 @@ for i in range(50):
     children_population.append('')
 
 avg_fitness = sum(fitness_array) / len(fitness_array)
-print(avg_fitness)
+print("Gen 0 fitness: ", avg_fitness)
 
 for i in range(50):
     fitness_array.clear()
@@ -118,4 +118,4 @@ for i in range(50):
     avg_fitness = sum(fitness_array) / len(fitness_array)
 
     population = children_population
-    print("Gen ", i, " fitness: ", avg_fitness)
+    print("Gen ", i+1, " fitness: ", avg_fitness)
